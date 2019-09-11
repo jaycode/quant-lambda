@@ -22,17 +22,33 @@
 ## Development Process
 
 1. Update `lambda_function.py`
-2. Install additional modules with `pip install --target ./package module_name`.
+2. Install additional modules with `pip install -t ./layers/module-layer/python module_name`.
 3. Go to ./project directory (i.e. this directory)
-4. Run `./zip.sh`. This function will create/update `function.zip`.
-5. Upload `function.zip` to lambda function by setting "Code entry type" to "Upload a .zip file".
+4. Update and run `./zip.sh`. This function will create/update `function.zip` and other aws layers in the `layers` directory.
+5. If adding new layers, create new layers on AWS and upload them there, then use these layers in the lambda function.
+6. Upload `function.zip` to lambda function by setting "Code entry type" to "Upload a .zip file" then upload the file.
+
+
+## PgAdmin
+See the guide [here](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ConnectToPostgreSQLInstance.html).
+
+To connect with local PgAdmin, make sure to first add an inbound rule in the security group with the computer's IP.
+
+**IMPORTANT:** Get the computer's IP from [here](https://ipinfo.info/html/privacy-check.php) from cell **HTTP_X_FORWARDED_FOR**. RDS does not accept the incoming inbound from REMOTE_ADDR.
 
 ## Troubleshooting
 
 ### Timeouts
 
-Usually caused by Lambda not being able to access the RDS instance. Make sure `AWSLambdaVPCAccessExecutionRole` is attached to Lambda role and the function is in the same VPC, subnet, and has the same security group as the RDS instance.
+Symptom: Lambda timeouts when accessing RDS instance.
 
+Fix: Usually caused by Lambda not being able to access the RDS instance. Make sure `AWSLambdaVPCAccessExecutionRole` is attached to Lambda role and the function is in the same VPC, subnet, and has the same security group as the RDS instance.
+
+### Lambda under VPC cannot access S3
+
+Symptom: Lambda instance under VPC can access RDS but cannot access S3.
+
+Fix: The VPC needs to have an Endpoint. Go to VPC > Endpoints then add an endpoint with service "com.amazonaws.us-east-1.s3".
 
 ## References
 1. Self-reference for RDS: https://docs.aws.amazon.com/glue/latest/dg/setup-vpc-for-glue-access.html
