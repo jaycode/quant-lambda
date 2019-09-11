@@ -13,6 +13,7 @@ import openpyxl as opx
 import os
 import io
 from log_helper import *
+from sheet_helper import *
 
 s3 = boto3.client('s3')
 
@@ -32,16 +33,21 @@ def lambda_handler(event, context):
             event['Records'][0]['s3']['object']['key'],
             encoding='utf-8')
         
-        sheet_names = []
-        if key[-3:].lower() == 'xls':
-            xls = xlrd.open_workbook(file_contents=read_object(bucket, key), on_demand=True)
-            sheet_names = xls.sheet_names()
-        elif key[-4:].lower() == 'xlsx':
-            wb = opx.load_workbook(io.BytesIO(read_object(bucket, key)), read_only=True)
-            sheet_names = wb.sheetnames
+        sheet_type = check_sheet_type(key)
+        if sheet_type == OWNERSHIP_STRUCTURES or \
+           sheet_type == LOCAL_MF_OWNERSHIPS:
+            sheet_names = []
+            if key[-3:].lower() == 'xls':
+                xls = xlrd.open_workbook(file_contents=read_object(bucket, key), on_demand=True)
+                sheet_names = xls.sheet_names()
+            elif key[-4:].lower() == 'xlsx':
+                wb = opx.load_workbook(io.BytesIO(read_object(bucket, key)), read_only=True)
+                sheet_names = wb.sheetnames
 
-        regex = re.compile(r'^[A-za-z]{3} [0-9]+$')
-        sheet_names = [i for i in sheet_names if regex.match(i)]
+            regex = re.compile(r'^[A-za-z]{3} [0-9]+$')
+            sheet_names = [i for i in sheet_names if regex.match(i)]
+        elif sheet_type == CASH_LEVELS:
+            sheet_names = ['Sheet1']
 
         return sheet_names + ["DONE"]
     else:
