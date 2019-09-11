@@ -10,9 +10,17 @@ create_layer () {
 
 create_function () {
 	cd functions
+	first_pwd=${OLDPWD}
+	echo $first_pwd
 	rm -f ./zipped/$1.zip
-	zip -r ./zipped/$1.zip ./$1.py
-	cd ${OLDPWD}
+	if [ ! -d "$1" ]; then
+		zip -r ./zipped/$1.zip ./$1.py
+	else
+		cd 	${1}
+		zip -r ../zipped/$1.zip ./*.py
+		cd ..
+	fi
+	cd ${first_pwd}
 }
 
 # Only need to do once, uncomment when need to install

@@ -9,9 +9,9 @@ def make_connection(endpoint, port, dbuser, password, database):
     conn.autocommit=True
     return conn 
 
-def execute_query(cursor, query, get_result=True):
+def execute_query(cursor, query, inputs=[], get_result=True):
     try:
-        cursor.execute(query)
+        cursor.execute(query, inputs)
     except:
         return log_err ("ERROR: Cannot execute cursor.\n{}".format(
             traceback.format_exc()) )
