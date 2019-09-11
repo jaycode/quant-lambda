@@ -69,10 +69,12 @@ CREATE TABLE catalyst.cash_levels_master (
     all_aum BIGINT,
     all_cash BIGINT,
     all_cash_level float8,
+    etf_index_aum BIGINT,
     active_equity BIGINT,
     active_aum BIGINT,
     active_cash BIGINT,
     active_cash_level float8,
+    CONSTRAINT cl_date UNIQUE(date)
 );
 """
 
@@ -229,16 +231,16 @@ INSERT INTO catalyst.local_mf_ownership_totals_master (
 
 insert_cl_rows = """
 INSERT INTO catalyst.cash_levels_master (
-        date, all_equity, all_aum, all_cash, all_cash_level,
+        date, all_equity, all_aum, all_cash, all_cash_level, etf_index_aum,
         active_equity, active_aum, active_cash, active_cash_level
     )
     VALUES
         {}
     ON CONFLICT(date) DO UPDATE SET (
-        date, all_equity, all_aum, all_cash, all_cash_level,
+        date, all_equity, all_aum, all_cash, all_cash_level, etf_index_aum,
         active_equity, active_aum, active_cash, active_cash_level
     ) = (
-        EXCLUDED.date, EXCLUDED.all_equity, EXCLUDED.all_aum, EXCLUDED.all_cash, EXCLUDED.all_cash_level,
+        EXCLUDED.date, EXCLUDED.all_equity, EXCLUDED.all_aum, EXCLUDED.all_cash, EXCLUDED.all_cash_level, EXCLUDED.etf_index_aum,
         EXCLUDED.active_equity, EXCLUDED.active_aum, EXCLUDED.active_cash, EXCLUDED.active_cash_level
     );
 """

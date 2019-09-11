@@ -78,7 +78,10 @@ def convert_int(value):
 
 
 def convert_string(value):
-    return "{}".format(str(value))
+    val = str(value)
+    if val == '#VALUE!' or val == '#N/A':
+        val = None
+    return val
     
 
 def convert_type(value):
