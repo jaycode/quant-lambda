@@ -25,6 +25,7 @@ def lambda_handler(event, context):
 		
 		keys += get_keys(s3client, 'data/ownership_structures/')
 		keys += get_keys(s3client, 'data/local_mf_ownerships/')
+		keys += get_keys(s3client, 'data/cash_levels/')
 		event = {"Records": []}
 		for key in keys:
 			event['Records'].append({
